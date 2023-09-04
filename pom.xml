@@ -163,7 +163,7 @@ flexible messaging model and an intuitive client API.</description>
     <typetools.version>0.5.0</typetools.version>
     <protobuf3.version>3.19.6</protobuf3.version>
     <protoc3.version>${protobuf3.version}</protoc3.version>
-    <grpc.version>1.45.1</grpc.version>
+    <grpc.version>1.45.4</grpc.version>
     <google-http-client.version>1.41.0</google-http-client.version>
     <perfmark.version>0.19.0</perfmark.version>
     <protoc-gen-grpc-java.version>${grpc.version}</protoc-gen-grpc-java.version>
@@ -288,7 +288,7 @@ flexible messaging model and an intuitive client API.</description>
     <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
     <git-commit-id-plugin.version>4.0.2</git-commit-id-plugin.version>
     <wagon-ssh-external.version>3.4.3</wagon-ssh-external.version>
-    <os-maven-plugin.version>1.7.0</os-maven-plugin.version>
+    <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
     <spotbugs-maven-plugin.version>4.7.3.0</spotbugs-maven-plugin.version>
     <spotbugs.version>4.7.3</spotbugs.version>
@@ -669,6 +669,12 @@ flexible messaging model and an intuitive client API.</description>
         <artifactId>netty-incubator-transport-native-io_uring</artifactId>
         <version>${netty-iouring.version}</version>
         <classifier>linux-aarch_64</classifier>
+      </dependency>
+      <dependency>
+        <groupId>io.netty.incubator</groupId>
+        <artifactId>netty-incubator-transport-native-io_uring</artifactId>
+        <version>${netty-iouring.version}</version>
+        <classifier>linux-loongarch_64</classifier>
       </dependency>
 
       <dependency>
@@ -1565,7 +1571,7 @@ flexible messaging model and an intuitive client API.</description>
         </executions>
       </plugin>
 
-      <plugin>
+      <!--  <plugin>
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>${license-maven-plugin.version}</version>
@@ -1654,7 +1660,7 @@ flexible messaging model and an intuitive client API.</description>
             </goals>
           </execution>
         </executions>
-      </plugin>
+      </plugin> -->
       <plugin>
         <groupId>org.apache.rat</groupId>
         <artifactId>apache-rat-plugin</artifactId>
@@ -1783,7 +1789,8 @@ flexible messaging model and an intuitive client API.</description>
                     <message>Java 17+ is required to build Pulsar.</message>
                   </requireJavaVersion>
                   <requireMavenVersion>
-                    <version>3.6.1</version>
+			  <!-- <version>3.6.1</version> -->
+			  <version>3.5.4</version>
                   </requireMavenVersion>
                 </rules>
               </configuration>
@@ -2442,6 +2449,13 @@ flexible messaging model and an intuitive client API.</description>
 
   <repositories>
     <repository>
+      <id>loongson</id>
+      <name>Loongson Maven</name>
+      <url>http://10.2.5.132:8082/artifactory/maven-controlled-1/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </repository>	  
+    <repository>
       <id>central</id>
       <layout>default</layout>
       <url>https://repo1.maven.org/maven2</url>
@@ -2465,4 +2479,13 @@ flexible messaging model and an intuitive client API.</description>
       </snapshots>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>loongson</id>
+      <name>Loongson Maven</name>
+      <url>http://10.2.5.132:8082/artifactory/maven-controlled-1/</url>
+      <releases><enabled>true</enabled></releases>
+      <snapshots><enabled>true</enabled></snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

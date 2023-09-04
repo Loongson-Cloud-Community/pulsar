@@ -18,7 +18,9 @@
 #
 
 # First create a stage with just the Pulsar tarball and scripts
-FROM busybox as pulsar
+FROM cr.loongnix.cn/library/busybox:1.30.1 as pulsar
+
+LABEL maintainer = "yangzewei@loongson"
 
 ARG PULSAR_TARBALL
 
@@ -44,36 +46,47 @@ RUN for SUBDIRECTORY in conf data download logs; do \
 
 # Trino writes logs to this directory (at least during tests), so we need to give the process permission
 # to create those log directories. This should be removed when Trino is removed.
+RUN mkdir -p /pulsar/trino
+
 RUN chmod g+w /pulsar/trino
 
 ### Create 2nd stage from Ubuntu image
 ### and add OpenJDK and Python dependencies (for Pulsar functions)
 
-FROM ubuntu:20.04
+FROM cr.loongnix.cn/library/debian:buster
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG UBUNTU_MIRROR=mirror://mirrors.ubuntu.com/mirrors.txt
-ARG UBUNTU_SECURITY_MIRROR=http://security.ubuntu.com/ubuntu/
+#ARG UBUNTU_MIRROR=mirror://mirrors.ubuntu.com/mirrors.txt
+#ARG UBUNTU_SECURITY_MIRROR=http://security.ubuntu.com/ubuntu/
 
 # Install some utilities
-RUN sed -i -e "s|http://archive\.ubuntu\.com/ubuntu/|${UBUNTU_MIRROR:-mirror://mirrors.ubuntu.com/mirrors.txt}|g" \
-     -e "s|http://security\.ubuntu\.com/ubuntu/|${UBUNTU_SECURITY_MIRROR:-http://security.ubuntu.com/ubuntu/}|g" /etc/apt/sources.list \
-     && echo 'Acquire::http::Timeout "30";\nAcquire::ftp::Timeout "30";\nAcquire::Retries "3";' > /etc/apt/apt.conf.d/99timeout_and_retries \
+#RUN sed -i -e "s|http://archive\.ubuntu\.com/ubuntu/|${UBUNTU_MIRROR:-mirror://mirrors.ubuntu.com/mirrors.txt}|g" \
+#     -e "s|http://security\.ubuntu\.com/ubuntu/|${UBUNTU_SECURITY_MIRROR:-http://security.ubuntu.com/ubuntu/}|g" /etc/apt/sources.list \
+RUN  echo 'Acquire::http::Timeout "30";\nAcquire::ftp::Timeout "30";\nAcquire::Retries "3";' > /etc/apt/apt.conf.d/99timeout_and_retries \
      && apt-get update \
      && apt-get -y dist-upgrade \
      && apt-get -y install --no-install-recommends netcat dnsutils less procps iputils-ping \
-                 python3 python3-kazoo python3-pip \
+                 python3 python3-pip \
                  curl ca-certificates wget apt-transport-https
+#we need kazoo but it not found in our python library now.
 
 # Install Eclipse Temurin Package
-RUN mkdir -p /etc/apt/keyrings \
-     && wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc \
-     && echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list \
-     && apt-get update \
-     && apt-get -y dist-upgrade \
-     && apt-get -y install temurin-17-jdk \
-     && export ARCH=$(uname -m | sed -r 's/aarch64/arm64/g' |  awk '!/arm64/{$0="amd64"}1') \
-     && echo networkaddress.cache.ttl=1 >> /usr/lib/jvm/temurin-17-jdk-$ARCH/conf/security/java.security \
+RUN wget -O /usr/local/jdk.tar.gz http://ftp.loongnix.cn/Java/openjdk17/loongson17.2.0-jdk17.0.3_7-linux-loongarch64.tar.gz \
+    && tar -xvf /usr/local/jdk.tar.gz -C /usr/local/ \
+    && mv /usr/local/jdk-* /usr/local/jdk-17 \
+    && rm /usr/local/jdk.tar.gz
+
+ENV JAVA_HOME=/usr/local/jdk-17
+ENV PATH=$PATH:$JAVA_HOME/bin
+#RUN mkdir -p /etc/apt/keyrings \
+#     && wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc \
+#     && echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list \
+#     && apt-get update \
+#     && apt-get -y dist-upgrade \
+#     && apt-get -y install temurin-17-jdk \
+#     && export ARCH= "loongarch64" \
+#     #&& export ARCH=$(uname -m | sed -r 's/aarch64/arm64/g' |  awk '!/arm64/{$0="loongarch64"}1') \
+#    && echo networkaddress.cache.ttl=1 >> /usr/lib/jvm/temurin-17-jdk-$ARCH/conf/security/java.security \
 
 # Cleanup apt
 RUN apt-get -y --purge autoremove \
@@ -101,7 +114,7 @@ ENV PULSAR_CLIENT_PYTHON_VERSION ${PULSAR_CLIENT_PYTHON_VERSION}
 
 # This script is intentionally run as the root user to make the dependencies available for all UIDs.
 RUN chmod +x /pulsar/bin/install-pulsar-client.sh
-RUN /pulsar/bin/install-pulsar-client.sh
+#RUN /pulsar/bin/install-pulsar-client.sh
 
 # The UID must be non-zero. Otherwise, it is arbitrary. No logic should rely on its specific value.
 USER 10000

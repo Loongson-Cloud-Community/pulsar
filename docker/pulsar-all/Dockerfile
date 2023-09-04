@@ -17,7 +17,11 @@
 # under the License.
 #
 
-FROM busybox as pulsar-all
+#FROM busybox as pulsar-all
+
+FROM cr.loongnix.cn/library/busybox:1.30.1 as pulsar-all
+
+LABEL maintainer = "yangzewei@loongson.cn"
 
 ARG PULSAR_IO_DIR
 ARG PULSAR_OFFLOADER_TARBALL
