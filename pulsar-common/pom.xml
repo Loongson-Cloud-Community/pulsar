@@ -75,13 +75,15 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-epoll</artifactId>
-      <classifier>linux-x86_64</classifier>
+      <version>4.1.63.Final</version>
+      <classifier>linux-loongarch_64</classifier>
     </dependency>
 
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-unix-common</artifactId>
-      <classifier>linux-x86_64</classifier>
+      <version>4.1.63.Final</version> 
+      <classifier>linux-loongarch_64</classifier>
     </dependency>
 
     <dependency>
@@ -124,6 +126,13 @@
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-tcnative-boringssl-static</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-tcnative-boringssl-static</artifactId>
+      <version>2.0.38.Final</version>
+      <classifier>linux-loongarch_64</classifier>
     </dependency>
 
     <dependency>

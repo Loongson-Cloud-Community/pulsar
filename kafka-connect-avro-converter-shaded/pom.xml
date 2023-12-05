@@ -85,7 +85,15 @@
                             <include>org.apache.commons:commons-compress</include>
                             <include>org.tukaani:xz</include>
                         </includes>
-                    </artifactSet>
+		     </artifactSet>
+                    <filters>
+                       <filter>
+                         <artifact>*:*</artifact>
+                         <excludes>
+                           <exclude>org.apache.pulsar.kafka.shade.io.confluent.kafka.schemaregistry.client.security.basicauth.BasicAuthCredentialProvider</exclude>
+                          </excludes>
+                        </filter>
+                    </filters>
                     <relocations>
                         <relocation>
                             <pattern>io.confluent</pattern>

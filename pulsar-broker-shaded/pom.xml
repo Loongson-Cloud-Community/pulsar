@@ -239,7 +239,8 @@
                   <shadedPattern>org.apache.pulsar.shade.org.rocksdb</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>com.sun.jna</pattern>
+			<!-- <pattern>com.sun.jna</pattern> -->
+		  <pattern>net.java.dev.jna</pattern>
                   <shadedPattern>org.apache.pulsar.shade.com.sun.jna</shadedPattern>
                 </relocation>
                 <relocation>
